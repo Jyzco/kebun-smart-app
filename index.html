@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KebunSmart - Sistem Monitoring & Manajemen Kebun Tropis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Top Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12a10 10 0 0 1 10-10z" fill="#E8F5E9" stroke="#2D6A4F"/>
+            <path d="M12 22V12" stroke="#2D6A4F" stroke-linecap="round"/>
+            <path d="M12 12c0-3 3-5 6-5-1 4-3 5-6 5z" fill="#52B788" stroke="#2D6A4F"/>
+            <path d="M12 15c0-2-2.5-4-5-4 1 3 2.5 4 5 4z" fill="#74C69D" stroke="#2D6A4F"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Kebun<span>Smart</span></h1>
+          <p class="brand-subtitle">Smart Garden & Orchard Management System</p>
+        </div>
+      </div>
+
+      <!-- Quick Header Status Badges -->
+      <div class="header-status-group">
+        <div class="quick-pill date-pill">
+          <span class="icon">📅</span>
+          <span id="current-date-display">13 Sep 2026</span>
+        </div>
+        <div class="quick-pill season-pill" id="header-season-badge">
+          <span class="icon" id="header-season-icon">☀️</span>
+          <span id="header-season-text">Musim Kemarau</span>
+        </div>
+        <div class="quick-pill moisture-pill" id="header-moisture-badge">
+          <span class="icon">💧</span>
+          <span>Tanah: <strong id="header-moisture-val">58%</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="app-navigation">
+      <div class="nav-container">
+        <button class="nav-tab active" data-target="section-dashboard">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-tab" data-target="section-calculator">
+          <span class="nav-icon">🌱</span>
+          <span>Kalkulator Bibit</span>
+        </button>
+        <button class="nav-tab" data-target="section-harvest">
+          <span class="nav-icon">🧺</span>
+          <span>Proyeksi Panen</span>
+        </button>
+        <button class="nav-tab" data-target="section-season">
+          <span class="nav-icon">⛅</span>
+          <span>Sistem Musim & Peringatan</span>
+        </button>
+        <button class="nav-tab" data-target="section-soil">
+          <span class="nav-icon">🌡️</span>
+          <span>Kelembapan Tanah</span>
+        </button>
+        <button class="nav-tab" data-target="section-tasks">
+          <span class="nav-icon">📋</span>
+          <span>Jadwal Adaptif</span>
+        </button>
+        <button class="nav-tab" data-target="section-catalog">
+          <span class="nav-icon">📖</span>
+          <span>Katalog Tanaman</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Application Content -->
+  <main class="app-main">
+
+    <!-- 1. DASHBOARD OVERVIEW -->
+    <section id="section-dashboard" class="content-section active">
+      <div class="section-hero">
+        <div class="hero-text">
+          <h2>Selamat Datang di Kebun Anda 🌿</h2>
+          <p>Pantau kelembapan tanah, kendalikan kebutuhan bibit, hitung proyeksi omzet buah, dan siapkan antisipasi pergantian musim secara real-time.</p>
+        </div>
+        <div class="hero-action">
+          <button class="btn btn-primary" onclick="switchTab('section-calculator')">
+            <span>+ Hitung Kebutuhan Bibit</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Alert Banner on Dashboard -->
+      <div class="season-alert-banner" id="dash-season-alert">
+        <div class="alert-icon-box" id="dash-alert-icon">⚠️</div>
+        <div class="alert-content">
+          <div class="alert-tag" id="dash-alert-tag">PERINGATAN DINI MUSIM</div>
+          <h3 id="dash-alert-title">Musim Kemarau Sedang Berlangsung</h3>
+          <p id="dash-alert-desc">Optimalkan irigasi tetes, pasang mulsa organik di piringan pohon, dan perbanyak penyiraman di pagi/sore hari untuk menekan evaporasi.</p>
+        </div>
+        <button class="btn btn-outline-white" onclick="switchTab('section-season')">Detail Rekomendasi Aksi →</button>
+      </div>
+
+      <!-- Dashboard Stat Cards Grid -->
+      <div class="stats-grid">
+        <div class="stat-card card-green">
+          <div class="stat-header">
+            <span class="stat-title">Pohon Produktif Terdata</span>
+            <span class="stat-icon-badge">🌳</span>
+          </div>
+          <div class="stat-value" id="dash-stat-trees">120 <small>Pohon</small></div>
+          <div class="stat-footer">Estimasi populasi siap panen</div>
+        </div>
+
+        <div class="stat-card card-gold">
+          <div class="stat-header">
+            <span class="stat-title">Estimasi Hasil Panen</span>
+            <span class="stat-icon-badge">🥑</span>
+          </div>
+          <div class="stat-value" id="dash-stat-weight">6.0 <small>Ton</small></div>
+          <div class="stat-footer" id="dash-stat-revenue">Potensi: Rp 150.000.000</div>
+        </div>
+
+        <div class="stat-card card-blue">
+          <div class="stat-header">
+            <span class="stat-title">Kelembapan Tanah Rata-Rata</span>
+            <span class="stat-icon-badge">💧</span>
+          </div>
+          <div class="stat-value" id="dash-stat-moisture">58%</div>
+          <div class="stat-footer">
+            <span class="status-pill status-ideal" id="dash-stat-moisture-pill">Ideal (Optimal)</span>
+          </div>
+        </div>
+
+        <div class="stat-card card-earth">
+          <div class="stat-header">
+            <span class="stat-title">Siklus Musim Aktif</span>
+            <span class="stat-icon-badge">🔄</span>
+          </div>
+          <div class="stat-value" id="dash-stat-season-name">Kemarau</div>
+          <div class="stat-footer" id="dash-stat-season-progress">Bulan ke-6 / Transisi Oktober</div>
+        </div>
+      </div>
+
+      <!-- Dashboard Two Column Widget: Moisture & Adaptive Task Shortcut -->
+      <div class="dashboard-widgets-grid">
+        <div class="widget-card">
+          <div class="widget-header">
+            <div class="widget-title-group">
+              <span class="widget-icon">📡</span>
+              <div>
+                <h3>Status Sensor Kelembapan Hari Ini</h3>
+                <p>Sensor Area Blok Utama (Kedalaman 25cm)</p>
+              </div>
+            </div>
+            <button class="btn-text" onclick="switchTab('section-soil')">Buka Sensor Penuh →</button>
+          </div>
+          <div class="soil-preview-box">
+            <div class="soil-gauge-mini">
+              <div class="circular-progress" id="dash-circle-progress">
+                <div class="inner-circle">
+                  <span class="circle-val" id="dash-mini-val">58%</span>
+                  <span class="circle-label">Kelembapan</span>
+                </div>
+              </div>
+            </div>
+            <div class="soil-quick-advice">
+              <h4 id="dash-advice-title">Kondisi Tanah Sangat Prima</h4>
+              <p id="dash-advice-desc">Kadar air pada zona perakaran cukup untuk metabolisme dan penyerapan hara tanpa risiko pembusukan jamur akar.</p>
+              <div class="advice-tags">
+                <span class="advice-tag">Irigasi: Normal</span>
+                <span class="advice-tag">Suhu Tanah: 26°C</span>
+                <span class="advice-tag">pH Tanah: 6.5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div class="widget-title-group">
+              <span class="widget-icon">📌</span>
+              <div>
+                <h3>Tugas Prioritas Musim Ini</h3>
+                <p>Jadwal perawatan otomatis teradaptasi</p>
+              </div>
+            </div>
+            <button class="btn-text" onclick="switchTab('section-tasks')">Kelola Semua Tugas →</button>
+          </div>
+          <div class="adaptive-tasks-preview" id="dash-task-preview-list">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 2. KALKULATOR BIBIT & REKOMENDASI PUPUK -->
+    <section id="section-calculator" class="content-section">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Kalkulator & Estimasi Kebutuhan Bibit</h2>
+          <p>Hitung presisi populasi bibit berdasarkan luas lahan, jarak tanam ideal, dan estimasi biaya serta rekomendasi pupuk awal lubang tanam.</p>
+        </div>
+      </div>
+
+      <div class="grid-two-column">
+        <!-- Input Form -->
+        <div class="card card-form">
+          <div class="card-header-icon">
+            <span class="badge-number">1</span>
+            <h3>Parameter Lahan & Tanaman</h3>
+          </div>
+          
+          <form id="seed-calc-form" onsubmit="event.preventDefault(); calculateSeeds();">
+            <div class="form-group">
+              <label for="land-area">Luas Lahan Bersih (m²)</label>
+              <div class="input-with-affix">
+                <input type="number" id="land-area" value="5000" min="10" step="10" required>
+                <span class="input-affix">m²</span>
+              </div>
+              <small class="helper-text">1 Hektar (Ha) = 10.000 m²</small>
+            </div>
+
+            <div class="form-group">
+              <label for="crop-preset">Jenis Komoditas Tanaman</label>
+              <select id="crop-preset" onchange="applyCropPreset()">
+                <option value="alpukat">Alpukat (Rekomendasi 8 x 8 m)</option>
+                <option value="durian">Durian (Rekomendasi 10 x 10 m)</option>
+                <option value="mangga">Mangga (Rekomendasi 8 x 8 m)</option>
+                <option value="jeruk">Jeruk Manis/Siam (Rekomendasi 5 x 5 m)</option>
+                <option value="kelengkeng">Kelengkeng (Rekomendasi 7 x 7 m)</option>
+                <option value="pisang">Pisang Cavendish (Rekomendasi 2.5 x 2.5 m)</option>
+                <option value="kopi">Kopi Robusta/Arabika (Rekomendasi 2.5 x 2.5 m)</option>
+                <option value="custom">Kustom Mandiri...</option>
+              </select>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="spacing-x">Jarak Antar Baris (m)</label>
+                <div class="input-with-affix">
+                  <input type="number" id="spacing-x" value="8" min="0.5" step="0.5" required>
+                  <span class="input-affix">meter</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="spacing-y">Jarak Dalam Baris (m)</label>
+                <div class="input-with-affix">
+                  <input type="number" id="spacing-y" value="8" min="0.5" step="0.5" required>
+                  <span class="input-affix">meter</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="seed-price">Harga Satuan Bibit Unggul (Rp)</label>
+              <div class="input-with-affix">
+                <span class="input-prefix">Rp</span>
+                <input type="number" id="seed-price" value="45000" min="0" step="500" required>
+              </div>
+              <small class="helper-text">Harga bibit okulasi / sambung pucuk bersertifikat</small>
+            </div>
+
+            <div class="form-group">
+              <label for="road-allowance">Penyisihan Jalan Kebun & Parit</label>
+              <select id="road-allowance">
+                <option value="0.90">Potong 10% (Standar Kebun Buah Modern)</option>
+                <option value="0.95">Potong 5% (Lahan Rata Padat)</option>
+                <option value="1.00">0% (100% Efektif Tanam)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              <span>⚡ Hitung Kebutuhan Bibit & Pupuk</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Result Card -->
+        <div class="card card-result">
+          <div class="card-header-icon">
+            <span class="badge-number">2</span>
+            <h3>Hasil Analisis & Estimasi</h3>
+          </div>
+
+          <div class="result-highlights">
+            <div class="result-box primary-box">
+              <span class="res-sub">Estimasi Kebutuhan Bibit</span>
+              <div class="res-main"><span id="res-seed-count">70</span> <small>Batang Pohon</small></div>
+              <span class="res-note" id="res-seed-cadangan">+ 7 batang (10%) cadangan sulaman disarankan</span>
+            </div>
+
+            <div class="result-box gold-box">
+              <span class="res-sub">Total Anggaran Bibit</span>
+              <div class="res-main" id="res-total-cost">Rp 3.150.000</div>
+              <span class="res-note" id="res-cost-per-m2">Rp 630 per m² lahan</span>
+            </div>
+          </div>
+
+          <!-- Pupuk Awal Rekomendasi Box -->
+          <div class="fertilizer-recommendation-box">
+            <h4>🌿 Rekomendasi Kebutuhan Pupuk Dasar / Awal</h4>
+            <p class="fert-desc">Takaran standar per lubang tanam (60x60x60 cm) yang difermentasi 2-4 minggu sebelum penanaman bibit:</p>
+            
+            <div class="fert-item-list">
+              <div class="fert-item">
+                <div class="fert-icon">🍂</div>
+                <div class="fert-info">
+                  <strong>Pupuk Kandang / Kompos Matang</strong>
+                  <span>15 - 20 kg per lubang tanam</span>
+                </div>
+                <div class="fert-total" id="fert-kompos-total">1.050 - 1.400 kg</div>
+              </div>
+
+              <div class="fert-item">
+                <div class="fert-icon">⛰️</div>
+                <div class="fert-info">
+                  <strong>Dolomit (Kapur Pertanian)</strong>
+                  <span>0.5 - 1 kg (kondisioner pH asam)</span>
+                </div>
+                <div class="fert-total" id="fert-dolomit-total">35 - 70 kg</div>
+              </div>
+
+              <div class="fert-item">
+                <div class="fert-icon">🧪</div>
+                <div class="fert-info">
+                  <strong>Pupuk Fosfat Dasar (SP-36 / Rock Phosphate)</strong>
+                  <span>250 - 300 gram per lubang untuk perakaran kuat</span>
+                </div>
+                <div class="fert-total" id="fert-sp36-total">17.5 - 21.0 kg</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer-action">
+            <button class="btn btn-secondary btn-block" onclick="applySeedsToHarvestTracker()">
+              <span>📥 Terapkan Jumlah Pohon ke Proyeksi Panen</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 3. PENCATATAN & PROYEKSI HASIL PANEN -->
+    <section id="section-harvest" class="content-section">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Pencatatan & Proyeksi Hasil Panen (Fruit Yield Tracker)</h2>
+          <p>Kalkulasi potensi panen raya, omzet penjualan buah, serta catat riwayat panen aktual kebun secara rapi dan tersimpan di memori sistem.</p>
+        </div>
+      </div>
+
+      <div class="grid-two-column">
+        <!-- Yield Projection Form -->
+        <div class="card card-form">
+          <div class="card-header-icon">
+            <span class="badge-number">A</span>
+            <h3>Kalkulator Proyeksi Panen</h3>
+          </div>
+
+          <form id="yield-calc-form" onsubmit="event.preventDefault(); calculateYield();">
+            <div class="form-group">
+              <label for="yield-trees">Jumlah Pohon Produktif</label>
+              <div class="input-with-affix">
+                <input type="number" id="yield-trees" value="120" min="1" required>
+                <span class="input-affix">Pohon</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="yield-per-tree">Estimasi Hasil per Pohon (kg/musim)</label>
+              <div class="input-with-affix">
+                <input type="number" id="yield-per-tree" value="50" min="0.1" step="0.5" required>
+                <span class="input-affix">kg / pohon</span>
+              </div>
+              <small class="helper-text">Rata-rata: Alpukat 40-70 kg, Durian 30-80 kg, Mangga 50-100 kg</small>
+            </div>
+
+            <div class="form-group">
+              <label for="yield-price">Proyeksi Harga Jual Petani (Rp/kg)</label>
+              <div class="input-with-affix">
+                <span class="input-prefix">Rp</span>
+                <input type="number" id="yield-price" value="25000" min="500" step="500" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              <span>📊 Hitung Proyeksi Omzet</span>
+            </button>
+          </form>
+
+          <div class="projection-summary-card">
+            <div class="proj-metric">
+              <span class="proj-label">Total Estimasi Bobot Panen</span>
+              <div class="proj-value"><strong id="proj-weight-kg">6.000 kg</strong> <span class="badge-ton" id="proj-weight-ton">(6,00 Ton)</span></div>
+            </div>
+            <div class="proj-divider"></div>
+            <div class="proj-metric">
+              <span class="proj-label">Estimasi Potensi Omzet Penjualan</span>
+              <div class="proj-revenue" id="proj-total-omzet">Rp 150.000.000</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Tambah Catatan Panen Aktual -->
+        <div class="card card-form">
+          <div class="card-header-icon">
+            <span class="badge-number">B</span>
+            <h3>Catat Hasil Panen Aktual</h3>
+          </div>
+
+          <form id="harvest-log-form" onsubmit="event.preventDefault(); addHarvestRecord();">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="log-date">Tanggal Panen</label>
+                <input type="date" id="log-date" required>
+              </div>
+              <div class="form-group">
+                <label for="log-crop">Komoditas / Varietas</label>
+                <input type="text" id="log-crop" placeholder="Contoh: Alpukat Miki / Durian Bawor" required>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="log-weight">Total Panen (kg)</label>
+                <div class="input-with-affix">
+                  <input type="number" id="log-weight" min="0.1" step="0.1" placeholder="450" required>
+                  <span class="input-affix">kg</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="log-grade">Kualitas Buah</label>
+                <select id="log-grade">
+                  <option value="Grade Super / Premium">Grade Super / Premium (Supermarket)</option>
+                  <option value="Grade A">Grade A (Pasar Induk)</option>
+                  <option value="Grade B / Olahan">Grade B / Industri Olahan</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="log-revenue">Total Pendapatan Terjual (Rp)</label>
+              <div class="input-with-affix">
+                <span class="input-prefix">Rp</span>
+                <input type="number" id="log-revenue" min="0" step="1000" placeholder="11250000" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="log-notes">Catatan Tambahan (Opsional)</label>
+              <input type="text" id="log-notes" placeholder="Contoh: Panen perdana pohon blok timur">
+            </div>
+
+            <button type="submit" class="btn btn-secondary btn-block">
+              <span>➕ Simpan ke Riwayat Panen</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Riwayat Panen Table -->
+      <div class="card mt-24">
+        <div class="card-header-flex">
+          <div class="widget-title-group">
+            <span class="widget-icon">📜</span>
+            <div>
+              <h3>Riwayat Pencatatan Panen Aktual</h3>
+              <p>Data tersimpan otomatis di perangkat Anda (LocalStorage)</p>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-danger" onclick="clearHarvestRecords()">
+            <span>🗑️ Hapus Semua Riwayat</span>
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="harvest-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Komoditas</th>
+                <th>Kualitas / Grade</th>
+                <th>Berat Panen (kg)</th>
+                <th>Pendapatan</th>
+                <th>Catatan</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="harvest-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+            <tfoot>
+              <tr class="table-total-row">
+                <td colspan="3"><strong>TOTAL KESELURUHAN TERDATA</strong></td>
+                <td id="table-total-weight"><strong>0 kg</strong></td>
+                <td id="table-total-revenue"><strong>Rp 0</strong></td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 4. PREDIKSI MUSIM BERKALA & PERINGATAN DINI -->
+    <section id="section-season" class="content-section">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Prediksi Musim Berkala & Sistem Peringatan Dini (5–6 Bulanan)</h2>
+          <p>Sistem cerdas pemantauan pergantian siklus iklim tropis berkala 6-bulanan (Musim Kemarau vs Musim Hujan) lengkap dengan checklist mitigasi risiko kebun.</p>
+        </div>
+      </div>
+
+      <!-- Season Cycle Interactive Simulator -->
+      <div class="card season-interactive-box">
+        <div class="season-timeline-header">
+          <div>
+            <h3>Siklus Kalender Musim Tropis Indonesia</h3>
+            <p>Pilih bulan untuk melihat simulasi rekomendasi dan peringatan dini</p>
+          </div>
+          <div class="season-toggle-buttons">
+            <button class="btn btn-sm btn-outline" id="btn-force-kemarau" onclick="setSimulatedMonth(6)">Simulasi Kemarau (Juli)</button>
+            <button class="btn btn-sm btn-outline" id="btn-force-hujan" onclick="setSimulatedMonth(11)">Simulasi Hujan (Desember)</button>
+            <button class="btn btn-sm btn-primary" id="btn-realtime-month" onclick="resetToRealMonth()">Bulan Sekarang (Sep)</button>
+          </div>
+        </div>
+
+        <!-- 12 Months Visual Strip -->
+        <div class="months-strip" id="months-strip-container">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Current Cycle Indicator -->
+        <div class="season-cycle-detail">
+          <div class="cycle-info-item">
+            <span class="label">Status Siklus Aktif</span>
+            <div class="val" id="cycle-season-name">Musim Kemarau</div>
+          </div>
+          <div class="cycle-info-item">
+            <span class="label">Periode Berlangsung</span>
+            <div class="val" id="cycle-period">April s/d September (6 Bulan)</div>
+          </div>
+          <div class="cycle-info-item">
+            <span class="label">Progres Siklus</span>
+            <div class="val" id="cycle-progress-text">Bulan ke-6 dari 6 Bulan</div>
+          </div>
+          <div class="cycle-info-item">
+            <span class="label">Perkiraan Transisi Mendatang</span>
+            <div class="val" id="cycle-next-transition">Awal Oktober (Menuju Musim Hujan)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Early Warning Banner & Actions -->
+      <div class="card early-warning-card" id="season-alert-container">
+        <!-- Rendered by JS: Kemarau Warning or Hujan Warning -->
+      </div>
+    </section>
+
+
+    <!-- 5. MONITORING KELEMBAPAN TANAH REAL-TIME -->
+    <section id="section-soil" class="content-section">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Monitoring Kelembapan Tanah Real-Time (Per Hari)</h2>
+          <p>Indikator visual gauge kelembapan tanah perakaran harian dengan klasifikasi status, simulasi live telemetry, dan grafik riwayat tren 24 jam.</p>
+        </div>
+      </div>
+
+      <div class="grid-two-column">
+        <!-- Gauge Visualizer & Controller -->
+        <div class="card card-soil-gauge">
+          <div class="card-header-flex">
+            <h3>Sensor Kelembapan Perakaran</h3>
+            <span class="status-pill status-ideal" id="soil-status-badge">Ideal (40% - 70%)</span>
+          </div>
+
+          <!-- Interactive Gauge -->
+          <div class="gauge-container">
+            <svg class="gauge-svg" viewBox="0 0 200 120">
+              <!-- Gauge Background Arc -->
+              <path class="gauge-bg" d="M 20 110 A 80 80 0 0 1 180 110" fill="none" stroke="#E2E8F0" stroke-width="18" stroke-linecap="round"/>
+              <!-- Colored Segments Reference Underlay -->
+              <path class="gauge-seg-dry" d="M 20 110 A 80 80 0 0 1 65 44" fill="none" stroke="#FDE68A" stroke-width="18" stroke-linecap="round"/>
+              <path class="gauge-seg-ideal" d="M 65 44 A 80 80 0 0 1 135 44" fill="none" stroke="#BBF7D0" stroke-width="18"/>
+              <path class="gauge-seg-wet" d="M 135 44 A 80 80 0 0 1 180 110" fill="none" stroke="#BAE6FD" stroke-width="18" stroke-linecap="round"/>
+              <!-- Active Progress Arc -->
+              <path id="gauge-progress-arc" d="M 20 110 A 80 80 0 0 1 180 110" fill="none" stroke="#2D6A4F" stroke-width="18" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="105"/>
+              <!-- Needle Pointer -->
+              <circle cx="100" cy="110" r="8" fill="#1E293B"/>
+              <line id="gauge-needle" x1="100" y1="110" x2="100" y2="40" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round" transform="rotate(14.4 100 110)"/>
+            </svg>
+
+            <div class="gauge-value-display">
+              <div class="gauge-number" id="gauge-val-text">58<span>%</span></div>
+              <div class="gauge-caption" id="gauge-caption-text">Kadar Lengas Tanah Optimal</div>
+            </div>
+
+            <div class="gauge-legend">
+              <span class="legend-item"><span class="legend-dot dot-dry"></span> Kering (&lt;40%)</span>
+              <span class="legend-item"><span class="legend-dot dot-ideal"></span> Ideal (40-70%)</span>
+              <span class="legend-item"><span class="legend-dot dot-wet"></span> Basah (&gt;70%)</span>
+            </div>
+          </div>
+
+          <!-- Sensor Controls / Simulator -->
+          <div class="sensor-controls">
+            <div class="control-row">
+              <label for="manual-moisture-slider">Atur Manual Kelembapan:</label>
+              <span id="slider-val-preview">58%</span>
+            </div>
+            <input type="range" id="manual-moisture-slider" min="10" max="95" value="58" oninput="updateMoistureFromSlider(this.value)">
+
+            <div class="simulation-toggle-box">
+              <div class="toggle-text">
+                <strong>Simulasi Sensor IoT Live</strong>
+                <small>Fluktuasi bertahap otomatis (evapotranspirasi / cuaca)</small>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="sim-toggle" checked onchange="toggleSensorSimulation(this.checked)">
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Environmental Context & Quick Recommendation -->
+        <div class="card card-soil-info">
+          <h3>Rekomendasi Tindakan Kelembapan</h3>
+          
+          <div class="moisture-action-box" id="moisture-action-box">
+            <!-- Dynamic Action Box -->
+            <div class="status-icon-lead" id="soil-lead-icon">✅</div>
+            <div class="status-lead-content">
+              <h4 id="soil-lead-title">Kondisi Lengas Tanah Sangat Baik</h4>
+              <p id="soil-lead-desc">Kadar air tersedia sangat ideal untuk perakaran tanaman buah. Tidak memerlukan tindakan darurat irigasi saat ini.</p>
+            </div>
+          </div>
+
+          <div class="sensor-metadata-list">
+            <div class="meta-item">
+              <span class="meta-name">Suhu Lapisan Tanah</span>
+              <strong class="meta-val" id="soil-temp">26.4 °C</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-name">Tipe Tekstur Tanah</span>
+              <strong class="meta-val">Lempung Liat Berpasir (Loam)</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-name">Derajat Keasaman (pH)</span>
+              <strong class="meta-val" id="soil-ph">6.4 (Netral-Subur)</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-name">Sensor ID & Kedalaman</span>
+              <strong class="meta-val">Probe-A1 (Kedalaman 25 cm)</strong>
+            </div>
+          </div>
+
+          <div class="quick-irrigation-tips">
+            <strong>💡 Pedoman Ambang Batas Kelembapan:</strong>
+            <ul>
+              <li><strong>&lt; 35%:</strong> Titik layu sementara (stress air). Segera nyalakan pompa irigasi tetes 30-45 menit.</li>
+              <li><strong>40% - 70%:</strong> Kapasitas lapang optimal. Pertumbuhan pucuk dan pembesaran buah berjalan sempurna.</li>
+              <li><strong>&gt; 75%:</strong> Jenuh air / anaerob. Buka saluran pembuangan air agar akar tidak busuk.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trend Chart 24 Jam -->
+      <div class="card mt-24">
+        <div class="card-header-flex">
+          <div class="widget-title-group">
+            <span class="widget-icon">📈</span>
+            <div>
+              <h3>Riwayat Tren Kelembapan Harian (24 Jam Terakhir)</h3>
+              <p>Grafik fluktuasi kelembapan tanah per jam dengan batas zona aman (40% - 70%)</p>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline" onclick="generateRandomTrend()">
+            <span>🔄 Perbarui Data Tren</span>
+          </button>
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas id="soil-trend-canvas" width="900" height="260"></canvas>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 6. JADWAL PERAWATAN ADAPTIF (TO-DO LIST) -->
+    <section id="section-tasks" class="content-section">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Jadwal Perawatan Adaptif</h2>
+          <p>Daftar tugas perawatan kebun yang otomatis menyesuaikan secara cerdas dengan kondisi musim yang sedang berjalan (Kemarau vs Hujan).</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-flex">
+          <div class="widget-title-group">
+            <span class="widget-icon" id="task-season-icon">☀️</span>
+            <div>
+              <h3 id="task-card-title">Checklist Perawatan: Musim Kemarau</h3>
+              <p id="task-card-subtitle">Prioritas: Manajemen penghematan air, mulsa, dan pencegahan stress daun</p>
+            </div>
+          </div>
+          <div class="task-counter-pill">
+            <span id="task-completed-count">0</span> / <span id="task-total-count">0</span> Tugas Selesai
+          </div>
+        </div>
+
+        <!-- Add Custom Task Form -->
+        <form id="add-task-form" class="add-task-bar" onsubmit="event.preventDefault(); addNewTask();">
+          <input type="text" id="new-task-input" placeholder="Tambah kegiatan perawatan baru (contoh: Semprot pupuk kalium cair)..." required>
+          <button type="submit" class="btn btn-primary">
+            <span>+ Tambah Tugas</span>
+          </button>
+        </form>
+
+        <!-- Task List Items -->
+        <div class="tasks-container" id="tasks-container">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="task-footer-bar">
+          <button class="btn btn-sm btn-outline" onclick="resetDefaultSeasonTasks()">
+            <span>🔄 Pulihkan Tugas Standar Musim</span>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="clearCompletedTasks()">
+            <span>🧹 Bersihkan Tugas Selesai</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 7. KATALOG TANAMAN & RESISTENSI MUSIM -->
+    <section id="section-catalog" class="content-section">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Katalog Tanaman Buah & Resistensi Musim</h2>
+          <p>Panduan komprehensif ketahanan tanaman terhadap musim kemarau dan musim hujan, kebutuhan air ideal, serta tips pencegahan hama/penyakit.</p>
+        </div>
+      </div>
+
+      <!-- Catalog Search & Filter Filter -->
+      <div class="catalog-filter-bar">
+        <div class="search-input-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="catalog-search" placeholder="Cari tanaman (contoh: Durian, Alpukat, Mangga)..." oninput="filterPlantCatalog()">
+        </div>
+        <div class="filter-chips">
+          <button class="chip active" data-filter="all" onclick="setCatalogFilter('all')">Semua Tanaman</button>
+          <button class="chip" data-filter="tahan-kemarau" onclick="setCatalogFilter('tahan-kemarau')">Tahan Kemarau Tinggi</button>
+          <button class="chip" data-filter="butuh-air" onclick="setCatalogFilter('butuh-air')">Butuh Pasokan Air</button>
+          <button class="chip" data-filter="rentan-jamur" onclick="setCatalogFilter('rentan-jamur')">Rentan Jamur Hujan</button>
+        </div>
+      </div>
+
+      <!-- Plant Cards Grid -->
+      <div class="plant-cards-grid" id="plant-cards-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p><strong>KebunSmart</strong> &copy; 2026. Aplikasi Front-End Monitoring & Manajemen Kebun Tropis Terintegrasi.</p>
+      <p class="footer-sub">Dirancang untuk petani modern, pekebun buah, dan pengelola agribisnis ramah lingkungan.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
